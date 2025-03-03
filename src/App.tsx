@@ -1,12 +1,13 @@
 import * as React from 'react';
+import Router from './router';
 import './App.scss';
 
-// function App() {
-//   return <></>;
-// }
-
 const App: React.FC = () => {
-  return <>Hello</>;
+  return (
+    <>
+      <Router />
+    </>
+  );
 };
 
 export default App;
