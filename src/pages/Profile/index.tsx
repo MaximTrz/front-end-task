@@ -1,19 +1,33 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, Box, Button, Typography } from '@mui/material';
+import Loader from '../../components/Loader';
 
 import useLogin from '../../hooks/useLogin';
+import useProfile from '../../hooks/useProfile';
+
+import { ERequestStatus } from '../../types/ERequestStatus';
 
 const Profile: React.FC = () => {
-  const { auth } = useLogin();
+  const { auth, token } = useLogin();
+
+  const { getProfile, fullname, requestStatus } = useProfile();
 
   const navigate = useNavigate();
 
   React.useEffect(() => {
     if (!auth) {
       navigate('/login');
+    } else if (token) {
+      if (requestStatus === ERequestStatus.IDLE) {
+        getProfile(token);
+      }
     }
   }, [auth]);
+
+  if (requestStatus === ERequestStatus.LOADING) {
+    return <Loader />;
+  }
 
   return (
     <>
@@ -24,7 +38,7 @@ const Profile: React.FC = () => {
 
         <Box display="flex" flexDirection="column" alignItems="flex-start">
           <Typography variant="h5" fontWeight="bold" marginBottom={1}>
-            Welcome, Alexey!
+            Welcome, {fullname}!
           </Typography>
           <Button variant="contained" color="primary" sx={{ marginBottom: 2 }}>
             Update
