@@ -1,7 +1,28 @@
 import * as React from 'react';
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, TextField, Typography } from '@mui/material';
+import Loader from '../../components/Loader';
+import useLogin from '../../hooks/useLogin';
+import { useNavigate } from 'react-router-dom';
+import { ERequestStatus } from '../../types/ERequestStatus';
 
 const Login: React.FC = () => {
+  const { login, auth, requestStatus, error } = useLogin();
+  const navigate = useNavigate();
+
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    login(email, password);
+  };
+
+  React.useEffect(() => {
+    if (auth) {
+      navigate('/profile');
+    }
+  }, [auth, requestStatus, navigate]);
+
   return (
     <>
       <Box
@@ -12,7 +33,7 @@ const Login: React.FC = () => {
           backgroundColor: 'background.paper',
         }}
       >
-        <Box component="form" sx={{ width: '100%' }}>
+        <Box component="form" sx={{ width: '100%' }} onSubmit={handleSubmit}>
           <TextField
             fullWidth
             margin="normal"
@@ -22,6 +43,7 @@ const Login: React.FC = () => {
             autoComplete="email"
             autoFocus
             required
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <TextField
@@ -32,18 +54,30 @@ const Login: React.FC = () => {
             type={'password'}
             autoComplete="current-password"
             required
+            onChange={(e) => setPassword(e.target.value)}
           />
 
+          {error && (
+            <Typography color="error" sx={{ mt: 2 }}>
+              {error}
+            </Typography>
+          )}
+
           <Box sx={{ mt: 3, mb: 2 }}>
-            <Button
-              variant="contained"
-              size="large"
-              sx={{
-                py: 1.5,
-              }}
-            >
-              Submit
-            </Button>
+            {requestStatus === ERequestStatus.LOADING ? (
+              <Loader />
+            ) : (
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                sx={{
+                  py: 1.5,
+                }}
+              >
+                Submit
+              </Button>
+            )}
           </Box>
         </Box>
       </Box>

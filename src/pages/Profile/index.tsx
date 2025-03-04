@@ -1,7 +1,20 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Avatar, Box, Button, Typography } from '@mui/material';
 
+import useLogin from '../../hooks/useLogin';
+
 const Profile: React.FC = () => {
+  const { auth } = useLogin();
+
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (!auth) {
+      navigate('/login');
+    }
+  }, [auth]);
+
   return (
     <>
       <Box display="flex" flexDirection="row" alignItems="center" padding={2}>
