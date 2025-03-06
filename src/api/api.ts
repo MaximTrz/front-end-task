@@ -1,6 +1,13 @@
 import TRequestAnswer from '../types/TRequestAnswer';
 
-const simulateDelay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const simulateDelay = (ms: number, signal?: AbortSignal) =>
+  new Promise((resolve, reject) => {
+    const timeout = setTimeout(resolve, ms);
+    signal?.addEventListener('abort', () => {
+      clearTimeout(timeout);
+      reject(new DOMException('Aborted', 'AbortError'));
+    });
+  });
 
 const mockUsers = [{ id: 1, email: 'user@test.com', password: '12345', name: 'Test User' }];
 
@@ -84,15 +91,14 @@ export const fetchProfile = async (token: string) => {
   };
 };
 
-export const fetchAuthor = async (token: string) => {
-  await simulateDelay(5000);
+export const fetchAuthor = async (token: string, signal?: AbortSignal) => {
+  await simulateDelay(5000, signal);
 
   if (token !== 'mock-token-12345') {
     throw new Error('Недействительный токен');
   }
 
   const randomAuthor = mockAuthors[Math.floor(Math.random() * mockAuthors.length)];
-
   return {
     success: true,
     data: {
@@ -102,20 +108,14 @@ export const fetchAuthor = async (token: string) => {
   };
 };
 
-export const fetchQuote = async (token: string, authorId: number) => {
-  await simulateDelay(5000);
+export const fetchQuote = async (token: string, authorId: number, signal?: AbortSignal) => {
+  await simulateDelay(5000, signal);
 
   if (token !== 'mock-token-12345') {
     throw new Error('Недействительный токен');
   }
 
-  const quotes = mockQuotes[authorId] || [
-    {
-      id: 0,
-      text: 'Цитата не найдена',
-    },
-  ];
-
+  const quotes = mockQuotes[authorId] || [{ id: 0, text: 'Цитата не найдена' }];
   const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
 
   return {
