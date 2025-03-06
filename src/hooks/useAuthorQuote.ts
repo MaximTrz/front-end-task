@@ -18,40 +18,34 @@ const useAuthorQuote = () => {
   const currentAuthor = useSelector((state: RootState) => state.authorQuote.currentAuthor);
   const currentQuote = useSelector((state: RootState) => state.authorQuote.currentQuote);
 
-  const getAuthor = useCallback(
-    (token: string) => {
-      if (authorAbortRef.current) {
-        authorAbortRef.current.abort();
-      }
+  const getAuthor = useCallback((token: string) => {
+    if (authorAbortRef.current) {
+      authorAbortRef.current.abort();
+    }
 
-      const controller = new AbortController();
-      authorAbortRef.current = controller;
+    const controller = new AbortController();
+    authorAbortRef.current = controller;
 
-      return dispatch(fetchAuthorAction({ token, signal: controller.signal }));
-    },
-    [dispatch],
-  );
+    return dispatch(fetchAuthorAction({ token, signal: controller.signal }));
+  }, []);
 
-  const getQuote = useCallback(
-    (token: string, authorId: number) => {
-      if (quoteAbortRef.current) {
-        quoteAbortRef.current.abort();
-      }
+  const getQuote = useCallback((token: string, authorId: number) => {
+    if (quoteAbortRef.current) {
+      quoteAbortRef.current.abort();
+    }
 
-      const controller = new AbortController();
-      quoteAbortRef.current = controller;
+    const controller = new AbortController();
+    quoteAbortRef.current = controller;
 
-      return dispatch(fetchQuoteAction({ token, authorId, signal: controller.signal }));
-    },
-    [dispatch],
-  );
+    return dispatch(fetchQuoteAction({ token, authorId, signal: controller.signal }));
+  }, []);
   const cancelAuthor = useCallback(() => {
     if (authorAbortRef.current) {
       authorAbortRef.current.abort();
       authorAbortRef.current = null;
       dispatch(cancelAuthorRequest());
     }
-  }, [dispatch]);
+  }, []);
 
   const cancelQuote = useCallback(() => {
     if (quoteAbortRef.current) {
@@ -59,18 +53,18 @@ const useAuthorQuote = () => {
       quoteAbortRef.current = null;
       dispatch(cancelQuoteRequest());
     }
-  }, [dispatch]);
+  }, []);
 
   const reset = useCallback(() => {
     dispatch(resetAuthorQuote());
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
     return () => {
       cancelAuthor();
       cancelQuote();
     };
-  }, [cancelAuthor, cancelQuote]);
+  }, []);
 
   return {
     author: currentAuthor.author,

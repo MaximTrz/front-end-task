@@ -1,7 +1,11 @@
 import * as React from 'react';
+import { ERequestStatus } from '../../types/ERequestStatus';
+import useAuthorQuote from '../../hooks/useAuthorQuote';
 import { Modal, Box, Typography, Button } from '@mui/material';
 
 const ModalWindow: React.FC<{ open: boolean; onClose: () => void }> = ({ open, onClose }) => {
+  const { authorStatus, quoteStatus } = useAuthorQuote();
+
   return (
     <Modal open={open} onClose={onClose}>
       <Box
@@ -21,10 +25,12 @@ const ModalWindow: React.FC<{ open: boolean; onClose: () => void }> = ({ open, o
           Requesting the quote
         </Typography>
         <Typography variant="body1" gutterBottom>
-          Step 1: Requesting author... <strong>Completed</strong>
+          Step 1: Requesting author...{' '}
+          {authorStatus === ERequestStatus.SUCCEEDED && <strong>Completed</strong>}
         </Typography>
         <Typography variant="body1" gutterBottom>
-          Step 2: Requesting quote...
+          Step 2: Requesting quote...{' '}
+          {quoteStatus === ERequestStatus.SUCCEEDED && <strong>Completed</strong>}
         </Typography>
         <Button variant="outlined" color="error" sx={{ mt: 2 }} onClick={onClose}>
           Cancel

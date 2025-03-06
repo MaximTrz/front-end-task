@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModalWindow from '../../components/ModalWindow';
@@ -10,6 +10,8 @@ import useProfile from '../../hooks/useProfile';
 import useAuthorQuote from '../../hooks/useAuthorQuote';
 
 import { ERequestStatus } from '../../types/ERequestStatus';
+
+import homerAvatar from '../../assets/homer.png';
 
 const Profile: React.FC = () => {
   const { auth, token } = useLogin();
@@ -40,7 +42,7 @@ const Profile: React.FC = () => {
         getProfile(token);
       }
     }
-  }, [auth]);
+  }, [auth, token, requestStatus, getProfile, navigate]);
 
   React.useEffect(() => {
     if (author && quote) {
@@ -48,7 +50,7 @@ const Profile: React.FC = () => {
     }
   }, [author, quote]);
 
-  const handleUpdate = () => {
+  const handleUpdate = useCallback(() => {
     setIsModalOpen(true);
     reset();
 
@@ -65,7 +67,14 @@ const Profile: React.FC = () => {
           console.error('Error fetching author:', error);
         });
     }
-  };
+  }, [token]);
+
+  const handleModalClose = useCallback(() => {
+    reset();
+    setIsModalOpen(false);
+    cancelAuthor();
+    cancelQuote();
+  }, []);
 
   if (requestStatus === ERequestStatus.LOADING) {
     return <Loader />;
@@ -75,7 +84,7 @@ const Profile: React.FC = () => {
     <>
       <Box display="flex" flexDirection="row" alignItems="center" padding={2}>
         <Box display="flex" flexDirection="column" alignItems="center" marginRight={4}>
-          <Avatar src="img" sx={{ width: 60, height: 60 }} />{' '}
+          <Avatar src={homerAvatar} sx={{ width: 60, height: 60 }} />{' '}
         </Box>
 
         <Box display="flex" flexDirection="column" alignItems="flex-start">
@@ -101,15 +110,7 @@ const Profile: React.FC = () => {
           {author?.id ? `${author.name}: ${quote?.quote || ''}` : ''}
         </Typography>
       </Box>
-      <ModalWindow
-        open={isModalOpen}
-        onClose={() => {
-          reset();
-          setIsModalOpen(false);
-          cancelAuthor();
-          cancelQuote();
-        }}
-      />
+      <ModalWindow open={isModalOpen} onClose={handleModalClose} />
     </>
   );
 };

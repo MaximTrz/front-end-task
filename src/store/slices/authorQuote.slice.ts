@@ -39,10 +39,12 @@ const initialAuthorQuoteState: TAuthorQuote = {
   },
 };
 
+export type Treject = { type: 'CANCEL' | 'ERROR'; message: string };
+
 export const fetchAuthorAction = createAsyncThunk<
   { authorId: number; name: string },
   { token: string; signal?: AbortSignal },
-  { rejectValue: { type: 'CANCEL' | 'ERROR'; message: string } }
+  { rejectValue: Treject }
 >('authorQuote/fetchAuthor', async ({ token, signal }, { rejectWithValue }) => {
   try {
     const response = await fetchAuthor(token, signal);
