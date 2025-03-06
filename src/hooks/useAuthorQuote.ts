@@ -27,7 +27,7 @@ const useAuthorQuote = () => {
       const controller = new AbortController();
       authorAbortRef.current = controller;
 
-      dispatch(fetchAuthorAction({ token, signal: controller.signal }));
+      return dispatch(fetchAuthorAction({ token, signal: controller.signal }));
     },
     [dispatch],
   );
@@ -41,11 +41,10 @@ const useAuthorQuote = () => {
       const controller = new AbortController();
       quoteAbortRef.current = controller;
 
-      dispatch(fetchQuoteAction({ token, authorId, signal: controller.signal }));
+      return dispatch(fetchQuoteAction({ token, authorId, signal: controller.signal }));
     },
     [dispatch],
   );
-
   const cancelAuthor = useCallback(() => {
     if (authorAbortRef.current) {
       authorAbortRef.current.abort();

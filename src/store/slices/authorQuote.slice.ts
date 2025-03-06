@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { ERequestStatus } from '../../types/ERequestStatus';
 import { fetchAuthor, fetchQuote } from '../../api/api';
 
@@ -39,38 +39,37 @@ const initialAuthorQuoteState: TAuthorQuote = {
   },
 };
 
-export const fetchAuthorAction = createAsyncThunk(
-  'authorQuote/fetchAuthor',
-  async ({ token, signal }: { token: string; signal?: AbortSignal }, { rejectWithValue }) => {
-    try {
-      const response = await fetchAuthor(token, signal);
-      return response.data;
-    } catch (error: any) {
-      if (error.name === 'AbortError') {
-        return rejectWithValue({ type: 'CANCEL', message: 'Запрос автора отменён' });
-      }
-      return rejectWithValue({ type: 'ERROR', message: error.message });
+export const fetchAuthorAction = createAsyncThunk<
+  { authorId: number; name: string },
+  { token: string; signal?: AbortSignal },
+  { rejectValue: { type: 'CANCEL' | 'ERROR'; message: string } }
+>('authorQuote/fetchAuthor', async ({ token, signal }, { rejectWithValue }) => {
+  try {
+    const response = await fetchAuthor(token, signal);
+    return response.data;
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      return rejectWithValue({ type: 'CANCEL', message: 'Запрос автора отменён' });
     }
-  },
-);
+    return rejectWithValue({ type: 'ERROR', message: error.message });
+  }
+});
 
-export const fetchQuoteAction = createAsyncThunk(
-  'authorQuote/fetchQuote',
-  async (
-    { token, authorId, signal }: { token: string; authorId: number; signal?: AbortSignal },
-    { rejectWithValue },
-  ) => {
-    try {
-      const response = await fetchQuote(token, authorId, signal);
-      return response.data;
-    } catch (error: any) {
-      if (error.name === 'AbortError') {
-        return rejectWithValue({ type: 'CANCEL', message: 'Запрос цитаты отменён' });
-      }
-      return rejectWithValue({ type: 'ERROR', message: error.message });
+export const fetchQuoteAction = createAsyncThunk<
+  { quoteId: number; authorId: number; quote: string },
+  { token: string; authorId: number; signal?: AbortSignal },
+  { rejectValue: { type: 'CANCEL' | 'ERROR'; message: string } }
+>('authorQuote/fetchQuote', async ({ token, authorId, signal }, { rejectWithValue }) => {
+  try {
+    const response = await fetchQuote(token, authorId, signal);
+    return response.data;
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      return rejectWithValue({ type: 'CANCEL', message: 'Запрос цитаты отменён' });
     }
-  },
-);
+    return rejectWithValue({ type: 'ERROR', message: error.message });
+  }
+});
 
 const authorQuoteSlice = createSlice({
   name: 'authorQuote',
@@ -93,11 +92,11 @@ const authorQuoteSlice = createSlice({
           name: payload.name,
         };
       })
-      .addCase(fetchAuthorAction.rejected, (state, { payload }) => {
-        const error = payload as { type: 'CANCEL' | 'ERROR'; message: string };
+      .addCase(fetchAuthorAction.rejected, (state, action) => {
+        const { payload } = action;
         state.currentAuthor.requestStatus =
-          error.type === 'CANCEL' ? ERequestStatus.IDLE : ERequestStatus.FAILED;
-        state.currentAuthor.error = error.message;
+          payload?.type === 'CANCEL' ? ERequestStatus.IDLE : ERequestStatus.FAILED;
+        state.currentAuthor.error = payload?.message || 'Неизвестная ошибка';
       });
 
     builder
@@ -113,11 +112,11 @@ const authorQuoteSlice = createSlice({
           quote: payload.quote,
         };
       })
-      .addCase(fetchQuoteAction.rejected, (state, { payload }) => {
-        const error = payload as { type: 'CANCEL' | 'ERROR'; message: string };
+      .addCase(fetchQuoteAction.rejected, (state, action) => {
+        const { payload } = action;
         state.currentQuote.requestStatus =
-          error.type === 'CANCEL' ? ERequestStatus.IDLE : ERequestStatus.FAILED;
-        state.currentQuote.error = error.message;
+          payload?.type === 'CANCEL' ? ERequestStatus.IDLE : ERequestStatus.FAILED;
+        state.currentQuote.error = payload?.message || 'Неизвестная ошибка';
       });
   },
 });
