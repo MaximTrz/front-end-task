@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModalWindow from '../../components/ModalWindow';
 import { Avatar, Box, Button, Typography } from '@mui/material';
@@ -9,12 +9,13 @@ import useLogin from '../../hooks/useLogin';
 import useProfile from '../../hooks/useProfile';
 import useAuthorQuote from '../../hooks/useAuthorQuote';
 
+
 import { ERequestStatus } from '../../types/ERequestStatus';
 
 import homerAvatar from '../../assets/homer.png';
 
 const Profile: React.FC = () => {
-  const { auth, token } = useLogin();
+  const { auth, token, requestStatus: loginRequestStatus} = useLogin();
 
   const { getProfile, fullname, requestStatus } = useProfile();
 
@@ -29,6 +30,14 @@ const Profile: React.FC = () => {
     cancelQuote,
     reset,
   } = useAuthorQuote();
+
+  const isButtonDisabled = useMemo(
+    () =>
+      authorStatus === ERequestStatus.LOADING ||
+      quoteStatus === ERequestStatus.LOADING ||
+      loginRequestStatus === ERequestStatus.LOADING,
+    [authorStatus, quoteStatus, loginRequestStatus] 
+  );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -95,9 +104,7 @@ const Profile: React.FC = () => {
             variant="contained"
             color="primary"
             sx={{ marginBottom: 2 }}
-            disabled={
-              authorStatus === ERequestStatus.LOADING || quoteStatus === ERequestStatus.LOADING
-            }
+            disabled={isButtonDisabled} 
             onClick={handleUpdate}
           >
             Update

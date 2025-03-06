@@ -1,6 +1,7 @@
 import { useSelector, useDispatch } from 'react-redux';
+import { useCallback } from 'react'; // Импортируем useCallback
 import { RootState, AppDispatch } from '../store';
-import { loginUser } from '../store/slices/login.slice';
+import { loginUser, logoutUser } from '../store/slices/login.slice';
 
 const useLogin = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -10,12 +11,22 @@ const useLogin = () => {
   const requestStatus = useSelector((state: RootState) => state.loginSlice.requestStatus);
   const error = useSelector((state: RootState) => state.loginSlice.error);
 
-  const login = (email: string, password: string) => {
-    dispatch(loginUser({ email, password }));
-  };
+  const login = useCallback(
+    (email: string, password: string) => {
+      dispatch(loginUser({ email, password }));
+    },
+    [], 
+  );
+
+  const logout = useCallback(() => {
+    if (token) {
+      dispatch(logoutUser(token));
+    }
+  }, [token]); 
 
   return {
     login,
+    logout,
     auth,
     token,
     requestStatus,

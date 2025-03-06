@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { login as loginApi } from '../../api/api';
+import { logout as logoutApi } from '../../api/api';
 import { ERequestStatus } from '../../types/ERequestStatus';
 
 export type TLoginState = {
@@ -34,6 +35,23 @@ export const loginUser = createAsyncThunk<
   }
 });
 
+export const logoutUser = createAsyncThunk<
+  void, 
+  string, 
+  { rejectValue: string }
+>('login/logoutUser', async (token, thunkAPI) => {
+  try {
+    const response = await logoutApi(token); 
+    if (response.success) {
+      return; 
+    } else {
+      return thunkAPI.rejectWithValue('Ошибка при выходе из системы');
+    }
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(error.message || 'Неизвестная ошибка');
+  }
+});
+
 const loginSlice = createSlice({
   name: 'login',
   initialState: initialLoginState,
@@ -61,7 +79,24 @@ const loginSlice = createSlice({
       .addCase(loginUser.rejected, (state, { payload }) => {
         state.requestStatus = ERequestStatus.FAILED;
         state.error = payload || 'Произошла ошибка';
+      })
+
+      .addCase(logoutUser.pending, (state) => {
+        state.requestStatus = ERequestStatus.LOADING;
+        state.error = null;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.requestStatus = ERequestStatus.SUCCEEDED;
+        state.token = null; 
+        state.auth = false;
+        state.error = null;
+      })
+      .addCase(logoutUser.rejected, (state, { payload }) => {
+        state.requestStatus = ERequestStatus.FAILED;
+        state.error = payload || 'Произошла ошибка при выходе из системы';
       });
+
+
   },
 });
 
