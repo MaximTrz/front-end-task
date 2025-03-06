@@ -9,7 +9,7 @@ const simulateDelay = (ms: number, signal?: AbortSignal) =>
     });
   });
 
-const mockUsers = [{ id: 1, email: 'user@test.com', password: '12345', name: 'Test User' }];
+const mockUsers = [{ id: 1, email: 'user@test.com', password: '12345', name: 'Homer' }];
 
 const mockAuthors = [
   { id: 1, name: 'Александр Пушкин' },
@@ -85,7 +85,7 @@ export const fetchProfile = async (token: string) => {
   return {
     success: true,
     data: {
-      fullname: 'Test User',
+      fullname: 'Homer',
       email: 'user@test.com',
     },
   };

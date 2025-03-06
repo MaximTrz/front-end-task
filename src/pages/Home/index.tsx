@@ -6,8 +6,6 @@ import Loader from '../../components/Loader';
 import useStore from '../../hooks/useStore';
 import { ERequestStatus } from '../../types/ERequestStatus';
 
-import './style.scss';
-
 const Home: React.FC = () => {
   const { aboutUs, fetchAboutUs } = useStore();
 

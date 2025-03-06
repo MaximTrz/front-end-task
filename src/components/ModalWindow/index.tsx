@@ -28,10 +28,12 @@ const ModalWindow: React.FC<{ open: boolean; onClose: () => void }> = ({ open, o
           Step 1: Requesting author...{' '}
           {authorStatus === ERequestStatus.SUCCEEDED && <strong>Completed</strong>}
         </Typography>
-        <Typography variant="body1" gutterBottom>
-          Step 2: Requesting quote...{' '}
-          {quoteStatus === ERequestStatus.SUCCEEDED && <strong>Completed</strong>}
-        </Typography>
+        {authorStatus === ERequestStatus.SUCCEEDED && (
+          <Typography variant="body1" gutterBottom>
+            Step 2: Requesting quote...{' '}
+            {quoteStatus === ERequestStatus.SUCCEEDED && <strong>Completed</strong>}
+          </Typography>
+        )}
         <Button variant="outlined" color="error" sx={{ mt: 2 }} onClick={onClose}>
           Cancel
         </Button>
