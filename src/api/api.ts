@@ -17,6 +17,8 @@ const mockAuthors = [
   { id: 3, name: 'Фёдор Достоевский' },
 ];
 
+const mockTokens = ['mock-token-12345', 'mock-token-67890'];
+
 interface IQuote {
   id: number;
   text: string;
@@ -70,7 +72,7 @@ export const login = async (
   return {
     success: true,
     data: {
-      token: 'mock-token-12345',
+      token: mockTokens[0],
     },
   };
 };
@@ -78,7 +80,7 @@ export const login = async (
 export const fetchProfile = async (token: string) => {
   await simulateDelay(1000);
 
-  if (token !== 'mock-token-12345') {
+  if (!mockTokens.includes(token)) {
     throw new Error('Недействительный токен');
   }
 
@@ -94,7 +96,7 @@ export const fetchProfile = async (token: string) => {
 export const fetchAuthor = async (token: string, signal?: AbortSignal) => {
   await simulateDelay(5000, signal);
 
-  if (token !== 'mock-token-12345') {
+  if (!mockTokens.includes(token)) {
     throw new Error('Недействительный токен');
   }
 
@@ -111,7 +113,7 @@ export const fetchAuthor = async (token: string, signal?: AbortSignal) => {
 export const fetchQuote = async (token: string, authorId: number, signal?: AbortSignal) => {
   await simulateDelay(5000, signal);
 
-  if (token !== 'mock-token-12345') {
+  if (!mockTokens.includes(token)) {
     throw new Error('Недействительный токен');
   }
 
@@ -130,6 +132,11 @@ export const fetchQuote = async (token: string, authorId: number, signal?: Abort
 
 export const logout = async (token: string) => {
   await simulateDelay(500);
+
+  if (!mockTokens.includes(token)) {
+    throw new Error('Недействительный токен');
+  }
+
   return {
     success: true,
     data: {},
