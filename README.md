@@ -6,7 +6,7 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/MaximTrz/front-end-task
-cd frontend-task
+cd front-end-task
 ```
 
 ## Install dependencies:
