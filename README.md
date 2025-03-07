@@ -28,3 +28,8 @@ npm run dev
 - **Redux**: For authentication state management
 - **React Router**: For routing
 - **UI Framework**: Material-UI
+
+## Test User
+
+- **Login**: `user@test.com`
+- **Password**: `12345`
