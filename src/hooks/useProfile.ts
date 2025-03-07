@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
 import { loadProfile } from '../store/slices/profile.slice';
@@ -10,9 +11,12 @@ const useProfile = () => {
   const requestStatus = useSelector((state: RootState) => state.profileSlice.requestStatus);
   const error = useSelector((state: RootState) => state.profileSlice.error);
 
-  const getProfile = (token: string) => {
-    dispatch(loadProfile(token));
-  };
+  const getProfile = useCallback(
+    (token: string) => {
+      dispatch(loadProfile(token));
+    },
+    [loadProfile],
+  );
 
   return {
     getProfile,

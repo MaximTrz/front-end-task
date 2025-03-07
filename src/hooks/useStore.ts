@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
 import { fetchInfo } from '../store/slices/base.slice';
@@ -7,9 +8,9 @@ const useStore = () => {
 
   const aboutUs = useSelector((state: RootState) => state.baseSlice.aboutUs);
 
-  const fetchAboutUs = () => {
+  const fetchAboutUs = useCallback(() => {
     dispatch(fetchInfo());
-  };
+  }, [fetchInfo]);
 
   return {
     aboutUs,
