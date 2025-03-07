@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useMemo } from 'react';
 import { Box, Button, TextField, Typography } from '@mui/material';
 import Loader from '../../components/Loader';
 import useLogin from '../../hooks/useLogin';
@@ -23,6 +24,8 @@ const Login: React.FC = () => {
     }
   }, [auth, requestStatus, navigate]);
 
+  const isRequestLoading = useMemo(() => requestStatus === ERequestStatus.LOADING, [requestStatus]);
+
   return (
     <>
       <Box
@@ -44,6 +47,7 @@ const Login: React.FC = () => {
             autoFocus
             required
             onChange={(e) => setEmail(e.target.value)}
+            disabled={isRequestLoading}
           />
 
           <TextField
@@ -55,6 +59,7 @@ const Login: React.FC = () => {
             autoComplete="current-password"
             required
             onChange={(e) => setPassword(e.target.value)}
+            disabled={isRequestLoading}
           />
 
           {error && (
